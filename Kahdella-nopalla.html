@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sikanoppa peli</title>
+    <link rel="stylesheet" href="tyyli.css">
+</head>
+<body>
+    <a href="index.html">Yhdellä nopalla</a>
+
+    <div class="peli">
+        <p>Sikapeli kahdella nopalla</p>
+        <br>
+        <input type="text" id="pelaajat" placeholder="Pelaaja määrä" class="pelaajat">
+        <button class="button" type="button" id="lisaa"></button>
+        <input type="text" id="pisteet" placeholder="Pisteet voittoon" class="pisteet">
+        <button class="button1" type="button" id="aseta"></button>
+        <button class="button2" type="button" id="aloitapeli"></button>
+        <br>
+        <button class="button3" type="button" id="heita"></button>
+        <p id="tulos"></p>
+        <button class="button4" type="button" id="lopetavuoro">Lopeta vuoro</button>
+    </div>
+    <script>
+        let pelaajat = 0;
+        let voittopisteet = 0;
+        let pisteet = [0, 0, 0, 0, 0, 0];
+        let vuorossa = 0;
+        let pelikaynnissa = false;
+        let kierrospisteet = 0;
+
+        document.getElementById('aloitapeli').innerHTML = "Aloita peli";
+        document.getElementById('heita').innerHTML = "Heitä noppaa";
+        document.getElementById('lisaa').innerHTML = "Lisää pelaajat";
+        document.getElementById('aseta').innerHTML = "Aseta pisteet";        
+
+        document.getElementById('lisaa').onclick = function() {
+            pelaajat = parseInt(document.getElementById('pelaajat').value);
+            if (pelaajat > 1 && pelaajat < 7) {
+                alert(pelaajat + " pelaajaa lisätty");
+            } else {
+                alert("Vähintään 2 pelaajaa enintään 6 pelaajaa");
+            }
+        }
+
+        document.getElementById('aseta').onclick = function(){
+            voittopisteet = parseInt(document.getElementById('pisteet').value);
+            if (voittopisteet > 0){
+                alert("Pisteet asetettu: " + voittopisteet);
+            } else {
+                alert("Anna yli 0 pistettä");
+            }
+        }
+
+        document.getElementById('aloitapeli').onclick = function(){
+            if (pelaajat >= 2 && voittopisteet > 0) {
+                pelikaynnissa = true;
+                pisteet = [0, 0, 0, 0, 0, 0];
+                vuorossa = 0;
+                kierrospisteet = 0;
+                document.getElementById('tulos').innerHTML = "Peli aloitettu! Pelaaja 1 aloittaa.<br>";
+            } else {
+                alert("Aseta pelaajat ja pisteet ensin");
+            }
+        }
+
+        document.getElementById('heita').onclick = function(){
+            if (!pelikaynnissa) {
+                alert("Aloita peli ensin");
+                return;
+            }
+
+            let noppa1 = Math.floor(Math.random() * 6) + 1;
+            let noppa2 = Math.floor(Math.random() * 6) + 1;
+
+            if (noppa1 === 1 && noppa2 === 1) {
+                kierrospisteet += 25;
+                document.getElementById('tulos').innerHTML = 
+                    "Heitit: 1 ja 1! Pelaaja " + (vuorossa+1) + " saa +25 pistettä.<br>";
+            } else if (noppa1 === 1 || noppa2 === 1) {
+                kierrospisteet = 0;
+                document.getElementById('tulos').innerHTML = 
+                    "Heitit: " + noppa1 + " ja " + noppa2 + ". Kierroksen pisteet menetetty.<br>";
+                vuorossa = (vuorossa + 1) % pelaajat;
+                document.getElementById('tulos').innerHTML += "Pelaajan " + (vuorossa+1) + " vuoro.<br>";
+                return;
+            } else {
+                let summa = noppa1 + noppa2;
+                if (noppa1 === noppa2) {
+                    summa *= 2;
+                    document.getElementById('tulos').innerHTML = 
+                        "Heitit tuplat: " + noppa1 + " ja " + noppa2 + "! Saat tuplapisteet.<br>";
+                } else {
+                    document.getElementById('tulos').innerHTML = 
+                        "Heitit: " + noppa1 + " ja " + noppa2 + "<br>";
+                }
+                kierrospisteet += summa;
+                document.getElementById('tulos').innerHTML += 
+                    "Kierroksen pisteet: " + kierrospisteet + "<br>";
+            }
+                if (pisteet[vuorossa] + kierrospisteet >= voittopisteet) {
+                    document.getElementById('tulos').innerHTML += 
+                        " Pelaaja " + (vuorossa+1) + " voitti pelin! <br>";
+                    pelikaynnissa = false;       
+                }
+        };
+            document.getElementById('lopetavuoro').onclick = function(){
+                if (!pelikaynnissa) {
+                    alert("Aloita peli ensin");
+                    return;
+    }
+
+                pisteet[vuorossa] += kierrospisteet;
+                kierrospisteet = 0;
+                document.getElementById('tulos').innerHTML = "Pelaaja " + (vuorossa+1) + 
+                    " lopetti vuoron. Kokonaispisteet: " + pisteet[vuorossa] + "<br>";
+
+                if (pisteet[vuorossa] >= voittopisteet) {
+                    document.getElementById('tulos').innerHTML += 
+                    "  Pelaaja " + (vuorossa+1) + " voitti pelin! <br>";
+                pelikaynnissa = false;
+            } else {
+                vuorossa = (vuorossa + 1) % pelaajat;
+                document.getElementById('tulos').innerHTML += 
+                    "Pelaajan " + (vuorossa+1) + " vuoro.<br>";
+                }
+            };
+    </script>
+</body>
+</html>
